@@ -4,8 +4,8 @@ from flask import Flask
 from flask import request
 import os
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import mail
-
+from sendgrid.helpers.mail import Mail
+import traceback
 
 app=Flask(__name__)
 
@@ -33,6 +33,27 @@ def sms():
     except Exception as e:
         print(e)
         return "ocurrio un error"
+    
+@app.route("/email")
+def email():
+    destino=request.args.get("correo_destino")
+    asunto=request.args.get("asunto")
+    mensaje=request.args.get("mensaje")
+    message=Mail(
+        from_email="haroldrocha.tic@ucaldas2020.onmicrosoft.com",
+        to_emails=destino,
+        subject=asunto,
+        html_content=mensaje
+        )
+    try:
+        sg=SendGridAPIClient(os.environ["SENDGRID_API_KEY"])
+        reponse=sg.send(message)
+        return "correo enviado exitosamente!"
+    except Exception as e:
+        traceback.print_exc()
+        #print(e.message)
+        return "error en el envio"
+
 
 
 if __name__=='__main__':
