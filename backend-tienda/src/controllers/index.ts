@@ -6,3 +6,7 @@ export * from './caja-tienda.controller';
 export * from './caja-empleado.controller';
 export * from './tienda-producto.controller';
 export * from './administrador.controller';
+export * from './empleado.controller';
+export * from './tienda.controller';
+export * from './caja.controller';
+export * from './producto.controller';
