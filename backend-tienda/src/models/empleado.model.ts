@@ -22,6 +22,10 @@ export class Empleado extends Usuario {
   })
   eps: string;
 
+  @property({
+    type: 'string',
+  })
+  cajaId?: string;
 
   constructor(data?: Partial<Empleado>) {
     super(data);

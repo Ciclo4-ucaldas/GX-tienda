@@ -27,6 +27,10 @@ export class Producto extends Entity {
   })
   precioUnitario: number;
 
+  @property({
+    type: 'string',
+  })
+  tiendaId?: string;
 
   constructor(data?: Partial<Producto>) {
     super(data);
