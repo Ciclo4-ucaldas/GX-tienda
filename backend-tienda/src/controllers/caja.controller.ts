@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -20,6 +21,7 @@ import {
 import {Caja} from '../models';
 import {CajaRepository} from '../repositories';
 
+@authenticate("admin")
 export class CajaController {
   constructor(
     @repository(CajaRepository)
@@ -129,6 +131,7 @@ export class CajaController {
     await this.cajaRepository.updateById(id, caja);
   }
 
+  @authenticate("empleado","admin")
   @put('/cajas/{id}')
   @response(204, {
     description: 'Caja PUT success',

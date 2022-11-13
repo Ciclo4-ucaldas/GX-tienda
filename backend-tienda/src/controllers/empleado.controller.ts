@@ -1,3 +1,5 @@
+import { authenticate } from '@loopback/authentication';
+import { service } from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -16,14 +18,19 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {Empleado} from '../models';
 import {EmpleadoRepository} from '../repositories';
+import { NotificacionService } from '../services';
 
+@authenticate("admin")
 export class EmpleadoController {
   constructor(
     @repository(EmpleadoRepository)
     public empleadoRepository : EmpleadoRepository,
+    @service (NotificacionService)
+    public servicioNotificacion :NotificacionService
   ) {}
 
   @post('/empleados')
@@ -43,8 +50,25 @@ export class EmpleadoController {
       },
     })
     empleado: Omit<Empleado, 'id'>,
-  ): Promise<Empleado> {
-    return this.empleadoRepository.create(empleado);
+  ): Promise<Empleado|any> {
+    let clave = this.servicioNotificacion.GenerarClave();
+    let claveCifrada= this.servicioNotificacion.cifrarClave(clave);
+    empleado.contrasena=claveCifrada
+    let Empl= this.empleadoRepository.create(empleado);
+    let asunto="Registro en plataforma como empleado"
+    let mensaje="Bienvenido a nuestra plataforma señor "+empleado.nombres+" "+empleado.apellidos+" su clave temporal es:"+clave+" y su usuario es:"+empleado.correo;
+    let enviadoEmail=this.servicioNotificacion.notificacionEmail(empleado.correo,asunto,mensaje);
+    let enviadoSMS;
+    if(empleado.celular){
+        enviadoSMS=this.servicioNotificacion.nofificacionSMS(empleado.celular,mensaje);
+    }else{
+      enviadoSMS=true;
+    }
+    if(enviadoEmail&&enviadoSMS){
+      return Empl
+    }else{
+      throw new HttpErrors[500]("No se pudo crear el empleado")
+    }
   }
 
   @get('/empleados/count')
@@ -129,6 +153,7 @@ export class EmpleadoController {
     await this.empleadoRepository.updateById(id, empleado);
   }
 
+  @authenticate("empleado","admin")
   @put('/empleados/{id}')
   @response(204, {
     description: 'Empleado PUT success',

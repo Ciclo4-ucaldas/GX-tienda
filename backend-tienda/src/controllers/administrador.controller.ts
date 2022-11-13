@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import { service } from '@loopback/core';
 import {
   Count,
@@ -23,16 +24,16 @@ import {Administrador} from '../models';
 import {AdministradorRepository} from '../repositories';
 import { AuthenticacionService, NotificacionService } from '../services';
 
+@authenticate("admin")
 export class AdministradorController {
   constructor(
     @repository(AdministradorRepository)
     public administradorRepository : AdministradorRepository,
     @service (NotificacionService)
-    public servicioNotificacion :NotificacionService,
-    @service (AuthenticacionService)
-    public servicioAuthenticacion:AuthenticacionService
+    public servicioNotificacion :NotificacionService
   ) {}
 
+  
   @post('/administradores')
   @response(200, {
     description: 'Administrador model instance',
@@ -67,7 +68,7 @@ export class AdministradorController {
     if(enviadoEmail&&enviadoSMS){
       return admin
     }else{
-      return new HttpErrors[500]("No se pudo crear el administrador")
+      throw new HttpErrors[500]("No se pudo crear el administrador")
     }
   }
 
