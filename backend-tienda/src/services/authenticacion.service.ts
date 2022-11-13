@@ -17,8 +17,24 @@ export class AuthenticacionService {
    * Add service methods here
    */
 
-  async generarToken(usuario:Usuario){
-    let rol="";
+  async identificarUsuario(usuario:string,clave:string){
+    try {
+      let admin= await this.repositorioAdministrador.findOne({where:{correo:usuario,contrasena:clave}}) 
+      if(admin){
+        return admin;
+      }else {
+        let Empl=await this.repositorioEmpleado.findOne({where:{correo:usuario,contrasena:clave}}) ; 
+        if(Empl){
+          return Empl;
+        }
+      }
+    } catch (error) {
+     console.log(error);      
+    }
+  }
+
+  async generarToken(usuario:Usuario,rol:string){
+    /*let rol="";
     let admin= await this.repositorioAdministrador.findOne({where:{correo:usuario.correo,contrasena:usuario.contrasena}}) 
     if(admin){
       rol=admin.constructor.name
@@ -28,8 +44,9 @@ export class AuthenticacionService {
       if(Empl){
         rol=Empl.constructor.name
       }
-    }
-    let token=jwt.sign({
+    }*/
+    console.log(rol);
+    let token=await jwt.sign({
       data:{
         id:usuario.id,
         correo:usuario.correo,
@@ -38,6 +55,7 @@ export class AuthenticacionService {
       }
     },Llaves.claveJWT
     )
+   // console.log(token);
     return token;
   }
 
@@ -48,6 +66,7 @@ export class AuthenticacionService {
     } catch (error) {
       console.log(error);
       return false;
+      
     }
   }
 }

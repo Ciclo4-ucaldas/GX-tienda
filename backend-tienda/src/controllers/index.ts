@@ -10,3 +10,4 @@ export * from './empleado.controller';
 export * from './tienda.controller';
 export * from './caja.controller';
 export * from './producto.controller';
+export * from './usuario.controller';

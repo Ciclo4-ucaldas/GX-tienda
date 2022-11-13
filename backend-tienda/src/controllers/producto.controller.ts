@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -26,6 +27,7 @@ export class ProductoController {
     public productoRepository : ProductoRepository,
   ) {}
 
+ @authenticate("admin")
   @post('/productos')
   @response(200, {
     description: 'Producto model instance',
@@ -129,6 +131,7 @@ export class ProductoController {
     await this.productoRepository.updateById(id, producto);
   }
 
+  @authenticate("empleado")
   @put('/productos/{id}')
   @response(204, {
     description: 'Producto PUT success',
