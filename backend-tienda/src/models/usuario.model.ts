@@ -36,6 +36,12 @@ export class Usuario extends Entity {
     type: 'string',
     required: true,
   })
+  correo: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
   contrasena: string;
 
 
